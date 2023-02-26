@@ -1,5 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import AppLoading from "expo-app-loading";
+import store from "./store";
+import { Provider } from "react-redux";
 import {
   useFonts as useAnton,
   Anton_400Regular,
@@ -10,6 +12,7 @@ import {
   DMSans_500Medium,
 } from "@expo-google-fonts/dm-sans";
 import Navigation from "./src/infrastructure/navigation";
+import { setUser } from "./reducers/authSlice";
 
 export default function App() {
   const [antonLoaded] = useAnton({
@@ -24,9 +27,9 @@ export default function App() {
     return <AppLoading />;
   }
   return (
-    <>
+    <Provider store={store}>
       <Navigation />
       <StatusBar style="auto" />
-    </>
+    </Provider>
   );
 }
