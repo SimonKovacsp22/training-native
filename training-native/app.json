@@ -1,21 +1,27 @@
 {
   "expo": {
     "name": "training-native",
+    "owner": "smithprince22",
     "slug": "training-native",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "currentFullName": "@smithprince22/training-native",
+    "originalFullName": "@smithprince22/training-native",
+    "scheme": "example.expo.googlesignin",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/91ae2e78-4e53-4172-a883-1ee442e47c96"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "bundleIdentifier": "example.expo.googlesignin",
       "supportsTablet": true
     },
     "android": {
@@ -23,11 +29,18 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "example.expo.googlesignin",
-      "googleServicesFile": "./google-services.json"
+      "package": "example.expo.googlesignin"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "91ae2e78-4e53-4172-a883-1ee442e47c96"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }
