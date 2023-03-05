@@ -1,38 +1,20 @@
-import { View, Text, TouchableOpacity } from "react-native";
-import SafeArea from "../../../components/SafeArea";
+import { View, Text, Image } from "react-native";
 import React from "react";
-import Workouts from "../../../components/Workouts";
+import { useSelector } from "react-redux";
+import { authSelector } from "../../../../reducers/authSlice";
+import SafeArea from "../../../components/SafeArea";
 
 const HomeScreen = () => {
+  const { user } = useSelector(authSelector);
+  console.log("User :", user);
   return (
     <SafeArea>
-      <View className="flex-1 bg-training-bg-blue px-6 py-4">
-        <Text
-          style={{
-            fontFamily: "Anton_400Regular",
-            fontSize: 32,
-            color: "white",
-          }}
-        >
-          Training
-        </Text>
-        <View className="mt-24"></View>
-        <TouchableOpacity>
-          <View className="bg-training-button-blue py-3 rounded">
-            <Text
-              style={{
-                fontFamily: "Anton_400Regular",
-                fontSize: 20,
-                color: "white",
-                textAlign: "center",
-                textTransform: "uppercase",
-              }}
-            >
-              Create Template
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <Workouts />
+      <View>
+        <Text>{user.name}</Text>
+        <Image
+          style={{ width: 100, height: 100 }}
+          source={{ uri: user.picture }}
+        />
       </View>
     </SafeArea>
   );

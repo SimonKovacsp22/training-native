@@ -1,6 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import AddWorkout from "../../features/screens/add/AddWorkout";
 import HomeScreen from "../../features/screens/home/HomeScreen";
+import AddWorkout from "../../features/screens/add/AddWorkout";
 import ScheduleScreen from "../../features/screens/schedule/ScheduleScreen";
 import SettingsNavigator from "../../features/screens/settings/SettingsNavigator";
 import PerformanceScreen from "../../features/screens/performance/PerformanceScreen";

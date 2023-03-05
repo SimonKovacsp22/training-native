@@ -5,6 +5,9 @@ import { setUser } from "../../../reducers/authSlice";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as AuthSession from "expo-auth-session";
+import * as WebBrowser from "expo-web-browser";
+
+WebBrowser.maybeCompleteAuthSession();
 
 const AccountNavigator = () => {
   const dispatch = useDispatch();
@@ -29,62 +32,14 @@ const AccountNavigator = () => {
       }
     );
     let data = await userInfoResponse.json();
+    const { email, name, picture, id } = data;
     setUserData(data);
-  };
-
-  const getCLientId = () => {
-    if (Platform.OS === "ios") {
-      return "397754311669-hqbf8hmrkrgrah1sk6dq4du140mbni5i.apps.googleusercontent.com";
-    } else if (Platform.OS === "android") {
-      return "397754311669-hqbf8hmrkrgrah1sk6dq4du140mbni5i.apps.googleusercontent.com";
-    } else {
-      throw new Error("Not supported platform");
-    }
-  };
-
-  const refreshToken = async () => {
-    const clientId = getCLientId();
-
-    const token = await AuthSession.refreshAsync(
-      {
-        clientId,
-        refreshToken: auth.refreshToken,
-      },
-      {
-        tokenEndpoint: "https://www.googleapis.com/oauth2/v4/token",
-      }
+    dispatch(setUser({ email, name, picture, id }));
+    await AsyncStorage.setItem(
+      "user",
+      JSON.stringify({ email, name, picture, id })
     );
-
-    token.refreshToken = auth.refreshToken;
-
-    setAuth(token);
-    await AsyncStorage.setItem("auth", JSON.stringify(token));
-    setRequireRefresh(false);
   };
-
-  useEffect(() => {
-    console.log(requireRefresh);
-    const getPersistedAuth = async () => {
-      try {
-        const savedAuthJsonValue = await AsyncStorage.getItem("auth");
-        if (savedAuthJsonValue != null) {
-          const authJSON = JSON.parse(savedAuthJsonValue);
-          setAuth(authJSON);
-
-          setRequireRefresh(
-            !AuthSession.TokenResponse.isTokenFresh({
-              expiresIn: authJSON.expiresIn,
-              issuedAt: authJSON.issuedAt,
-            })
-          );
-        }
-      } catch (e) {
-        console.log("get data from AsyncStorage error" + e);
-      }
-    };
-
-    getPersistedAuth();
-  }, []);
 
   useEffect(() => {
     if (response?.type === "success") {
@@ -106,9 +61,48 @@ const AccountNavigator = () => {
   }, [response]);
 
   useEffect(() => {
-    if (requireRefresh === false) return;
-    refreshToken();
-  }, [requireRefresh]);
+    const getPersistedAuth = async () => {
+      try {
+        const savedAuthJsonValue = await AsyncStorage.getItem("auth");
+        if (savedAuthJsonValue != null) {
+          const authJSON = JSON.parse(savedAuthJsonValue);
+          setAuth(authJSON);
+
+          setRequireRefresh(
+            !AuthSession.TokenResponse.isTokenFresh({
+              expiresIn: authJSON.expiresIn,
+              issuedAt: authJSON.issuedAt,
+            })
+          );
+        }
+      } catch (e) {
+        console.log("get data from AsyncStorage error " + e);
+      }
+    };
+
+    getPersistedAuth();
+  }, []);
+
+  useEffect(() => {
+    const getPersistedUser = async () => {
+      try {
+        const user = await AsyncStorage.getItem("user");
+        const userObject = JSON.parse(user);
+        dispatch(setUser({ ...userObject }));
+        console.log(user);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    getPersistedUser();
+  }, []);
+
+  // useEffect(() => {
+  //   console.log("REFRESH REQUIRED: ", requireRefresh);
+  //   if (requireRefresh === false) return;
+  //   refreshToken();
+  // }, [requireRefresh]);
 
   return (
     <View className="flex-1 items-center justify-center">
