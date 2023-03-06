@@ -1,10 +1,10 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../../features/screens/home/HomeScreen";
-import AddWorkout from "../../features/screens/add/AddWorkout";
 import ScheduleScreen from "../../features/screens/schedule/ScheduleScreen";
 import SettingsNavigator from "../../features/screens/settings/SettingsNavigator";
 import PerformanceScreen from "../../features/screens/performance/PerformanceScreen";
 import { Entypo } from "@expo/vector-icons";
+import WorkoutNavigator from "./WorkoutNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -51,7 +51,7 @@ const AppNavigation = () => {
     <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen name="Account" component={HomeScreen} />
       <Tab.Screen name="Schedule" component={ScheduleScreen} />
-      <Tab.Screen name="Add" component={AddWorkout} />
+      <Tab.Screen name="Add" component={WorkoutNavigator} />
       <Tab.Screen name="Settings" component={SettingsNavigator} />
       <Tab.Screen name="Performance" component={PerformanceScreen} />
     </Tab.Navigator>

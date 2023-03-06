@@ -1,5 +1,4 @@
 import { StatusBar } from "expo-status-bar";
-import AppLoading from "expo-app-loading";
 import store from "./store";
 import { Provider } from "react-redux";
 import {
@@ -12,7 +11,8 @@ import {
   DMSans_500Medium,
 } from "@expo-google-fonts/dm-sans";
 import Navigation from "./src/infrastructure/navigation";
-import { setUser } from "./reducers/authSlice";
+import "react-native-gesture-handler";
+import { Text } from "react-native";
 
 export default function App() {
   const [antonLoaded] = useAnton({
@@ -24,7 +24,7 @@ export default function App() {
   });
 
   if (!antonLoaded || !latoLoaded) {
-    return <AppLoading />;
+    return <Text>Loading...</Text>;
   }
   return (
     <Provider store={store}>

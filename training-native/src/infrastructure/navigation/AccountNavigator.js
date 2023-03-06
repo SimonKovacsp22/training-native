@@ -1,19 +1,16 @@
-import { View, Text, Button, Image, Platform } from "react-native";
+import { View, Text, Button, Image } from "react-native";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../../reducers/authSlice";
 import * as Google from "expo-auth-session/providers/google";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as AuthSession from "expo-auth-session";
 import * as WebBrowser from "expo-web-browser";
+import { saveUserInDb } from "../../services/database.service";
 
 WebBrowser.maybeCompleteAuthSession();
 
 const AccountNavigator = () => {
   const dispatch = useDispatch();
-  const [userData, setUserData] = useState({});
-  const [auth, setAuth] = useState();
-  const [requireRefresh, setRequireRefresh] = useState(false);
+  const [auth, setAuth] = useState(null);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId:
@@ -25,78 +22,90 @@ const AccountNavigator = () => {
   });
 
   const getUserData = async () => {
-    let userInfoResponse = await fetch(
-      "https://www.googleapis.com/userinfo/v2/me",
-      {
-        headers: { Authorization: `Bearer ${auth.accessToken}` },
+    try {
+      let userInfoResponse = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: { Authorization: `Bearer ${auth.accessToken}` },
+        }
+      );
+      let data = await userInfoResponse.json();
+      if (data != null) {
+        const { email, name, picture, id } = data;
+        dispatch(setUser({ email, name, picture, id }));
+        saveUserInDb(id, name, email, picture);
       }
-    );
-    let data = await userInfoResponse.json();
-    const { email, name, picture, id } = data;
-    setUserData(data);
-    dispatch(setUser({ email, name, picture, id }));
-    await AsyncStorage.setItem(
-      "user",
-      JSON.stringify({ email, name, picture, id })
-    );
+    } catch (error) {
+      console.log("Get User data error ", e);
+    }
+
+    // await AsyncStorage.setItem(
+    //   "user",
+    //   JSON.stringify({ email, name, picture, id })
+    // );
   };
 
   useEffect(() => {
     if (response?.type === "success") {
       setAuth(response.authentication);
 
-      const persistAuth = async () => {
-        try {
-          await AsyncStorage.setItem(
-            "auth",
-            JSON.stringify(response.authentication)
-          );
-        } catch (e) {
-          console.log("persistAuth error" + e);
-        }
-      };
+      // const persistAuth = async () => {
+      //   try {
+      //     await AsyncStorage.setItem(
+      //       "auth",
+      //       JSON.stringify(response.authentication)
+      //     );
+      //   } catch (e) {
+      //     console.log("persistAuth error" + e);
+      //   }
+      // };
 
-      persistAuth();
+      // persistAuth();
     }
   }, [response]);
 
   useEffect(() => {
-    const getPersistedAuth = async () => {
-      try {
-        const savedAuthJsonValue = await AsyncStorage.getItem("auth");
-        if (savedAuthJsonValue != null) {
-          const authJSON = JSON.parse(savedAuthJsonValue);
-          setAuth(authJSON);
+    if (auth === null) return;
+    getUserData();
+  }, [auth]);
 
-          setRequireRefresh(
-            !AuthSession.TokenResponse.isTokenFresh({
-              expiresIn: authJSON.expiresIn,
-              issuedAt: authJSON.issuedAt,
-            })
-          );
-        }
-      } catch (e) {
-        console.log("get data from AsyncStorage error " + e);
-      }
-    };
+  // useEffect(() => {
+  //   const getPersistedAuth = async () => {
+  //     try {
+  //       const savedAuthJsonValue = await AsyncStorage.getItem("auth");
+  //       if (savedAuthJsonValue != null) {
+  //         const authJSON = JSON.parse(savedAuthJsonValue);
+  //         setAuth(authJSON);
 
-    getPersistedAuth();
-  }, []);
+  //         setRequireRefresh(
+  //           !AuthSession.TokenResponse.isTokenFresh({
+  //             expiresIn: authJSON.expiresIn,
+  //             issuedAt: authJSON.issuedAt,
+  //           })
+  //         );
+  //       }
+  //     } catch (e) {
+  //       console.log("get data from AsyncStorage error " + e);
+  //     }
+  //   };
 
-  useEffect(() => {
-    const getPersistedUser = async () => {
-      try {
-        const user = await AsyncStorage.getItem("user");
-        const userObject = JSON.parse(user);
-        dispatch(setUser({ ...userObject }));
-        console.log(user);
-      } catch (e) {
-        console.log(e);
-      }
-    };
+  //   getPersistedAuth();
+  // }, []);
 
-    getPersistedUser();
-  }, []);
+  // useEffect(() => {
+  //   const getPersistedUser = async () => {
+  //     try {
+  //       const user = await AsyncStorage.getItem("user");
+  //       const userObject = JSON.parse(user);
+  //       dispatch(setUser({ ...userObject }));
+  //       console.log(user);
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   };
+
+  //   getPersistedUser();
+  // }, []);
 
   // useEffect(() => {
   //   console.log("REFRESH REQUIRED: ", requireRefresh);
@@ -107,22 +116,9 @@ const AccountNavigator = () => {
   return (
     <View className="flex-1 items-center justify-center">
       <Button
-        title={!!auth?.accessToken ? "Get User Data" : "Login"}
-        onPress={
-          !!auth
-            ? getUserData
-            : () => promptAsync({ useProxy: true, showInRecents: true })
-        }
+        title={"Login With Google"}
+        onPress={() => promptAsync({ useProxy: true, showInRecents: true })}
       />
-      {!!userData && (
-        <View>
-          <Text>{userData.name}</Text>
-          <Image
-            style={{ width: 100, height: 100 }}
-            source={{ uri: userData?.picture }}
-          />
-        </View>
-      )}
     </View>
   );
 };

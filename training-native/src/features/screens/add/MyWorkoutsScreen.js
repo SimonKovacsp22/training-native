@@ -3,7 +3,7 @@ import SafeArea from "../../../components/SafeArea";
 import React from "react";
 import Workouts from "../../../components/Workouts";
 
-const AddWorkout = () => {
+const AddWorkout = ({ navigation }) => {
   return (
     <SafeArea>
       <View className="flex-1 bg-training-bg-blue px-6 py-4">
@@ -17,7 +17,7 @@ const AddWorkout = () => {
           Training
         </Text>
         <View className="mt-24"></View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("AddWorkout")}>
           <View className="bg-training-button-blue py-3 rounded">
             <Text
               style={{
