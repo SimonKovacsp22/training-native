@@ -25,12 +25,30 @@ export function saveUserInDb(userId, name, email, imageUrl) {
 }
 
 export function saveNewTraining(userId, name, series, date) {
-  const postListRef = ref(database, "trainings");
-  const newPostRef = push(postListRef);
+  const trainingRef = ref(database, "trainings");
+  const newPostRef = push(trainingRef);
   set(newPostRef, {
     userId,
     name,
     series,
     date,
+  });
+}
+
+export function saveNewExercise(name, type) {
+  const exerciseRef = ref(database, "exercises");
+  const newPostRef = push(exerciseRef);
+  set(newPostRef, {
+    name,
+    type,
+  });
+}
+
+export function saveNewSerie(exerciseId, sets) {
+  const serieRef = ref(database, "series");
+  const newPostRef = push(serieRef);
+  set(newPostRef, {
+    exerciseId,
+    sets,
   });
 }

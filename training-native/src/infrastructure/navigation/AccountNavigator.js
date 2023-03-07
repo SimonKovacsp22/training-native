@@ -1,10 +1,15 @@
 import { View, Text, Button, Image } from "react-native";
 import { useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../../reducers/authSlice";
+import { logUserOut, setUser } from "../../../reducers/authSlice";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import { saveUserInDb } from "../../services/database.service";
+import {
+  getUserFromStorage,
+  saveUserInStorage,
+} from "../../services/authentication.service";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -33,85 +38,39 @@ const AccountNavigator = () => {
       if (data != null) {
         const { email, name, picture, id } = data;
         dispatch(setUser({ email, name, picture, id }));
+        saveUserInStorage(email, name, picture, id);
         saveUserInDb(id, name, email, picture);
       }
     } catch (error) {
       console.log("Get User data error ", e);
     }
+  };
 
-    // await AsyncStorage.setItem(
-    //   "user",
-    //   JSON.stringify({ email, name, picture, id })
-    // );
+  const isUserInStorage = async () => {
+    try {
+      const user = await getUserFromStorage();
+      if (user !== null) {
+        dispatch(setUser({ ...user }));
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   useEffect(() => {
     if (response?.type === "success") {
       setAuth(response.authentication);
-
-      // const persistAuth = async () => {
-      //   try {
-      //     await AsyncStorage.setItem(
-      //       "auth",
-      //       JSON.stringify(response.authentication)
-      //     );
-      //   } catch (e) {
-      //     console.log("persistAuth error" + e);
-      //   }
-      // };
-
-      // persistAuth();
     }
   }, [response]);
+
+  useEffect(() => {
+    isUserInStorage();
+  }, []);
 
   useEffect(() => {
     if (auth === null) return;
     getUserData();
   }, [auth]);
-
-  // useEffect(() => {
-  //   const getPersistedAuth = async () => {
-  //     try {
-  //       const savedAuthJsonValue = await AsyncStorage.getItem("auth");
-  //       if (savedAuthJsonValue != null) {
-  //         const authJSON = JSON.parse(savedAuthJsonValue);
-  //         setAuth(authJSON);
-
-  //         setRequireRefresh(
-  //           !AuthSession.TokenResponse.isTokenFresh({
-  //             expiresIn: authJSON.expiresIn,
-  //             issuedAt: authJSON.issuedAt,
-  //           })
-  //         );
-  //       }
-  //     } catch (e) {
-  //       console.log("get data from AsyncStorage error " + e);
-  //     }
-  //   };
-
-  //   getPersistedAuth();
-  // }, []);
-
-  // useEffect(() => {
-  //   const getPersistedUser = async () => {
-  //     try {
-  //       const user = await AsyncStorage.getItem("user");
-  //       const userObject = JSON.parse(user);
-  //       dispatch(setUser({ ...userObject }));
-  //       console.log(user);
-  //     } catch (e) {
-  //       console.log(e);
-  //     }
-  //   };
-
-  //   getPersistedUser();
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("REFRESH REQUIRED: ", requireRefresh);
-  //   if (requireRefresh === false) return;
-  //   refreshToken();
-  // }, [requireRefresh]);
 
   return (
     <View className="flex-1 items-center justify-center">
