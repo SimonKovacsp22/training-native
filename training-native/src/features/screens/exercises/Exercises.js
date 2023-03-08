@@ -1,13 +1,19 @@
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { ref, onValue } from "firebase/database";
 import { database } from "../../../services/database.service";
 import SafeArea from "../../../components/SafeArea";
+import Exercise from "../../../components/exercises/InstanceExercise";
+import { textStyles } from "../../../theme/text.styles";
+import { workoutSelector } from "../../../../reducers/workoutSlice";
+import { useSelector } from "react-redux";
+import { Entypo } from "@expo/vector-icons";
 
-const ExercisesScreen = () => {
+const ExercisesScreen = ({ navigation }) => {
   const [exercises, setExercises] = useState([]);
   const [recent, setRecent] = useState([1, 2, 3, 4]);
 
+  const { selectedExercises } = useSelector(workoutSelector);
   useEffect(() => {
     function getExercises() {
       const exercisesRef = ref(database, "exercises");
@@ -26,8 +32,17 @@ const ExercisesScreen = () => {
 
   return (
     <SafeArea>
-      <View className="flex-1 bg-training-bg-blue px-6 py-4">
-        <Text style={styles.textAntonRegular}>Exercises</Text>
+      <View className="flex-1 bg-training-bg-blue px-6 py-4 ">
+        <View className="flex-row justify-between items-center">
+          <Text style={textStyles.textAntonRegular}>Exercises</Text>
+          <Entypo
+            name={"back"}
+            size={36}
+            color={"white"}
+            style={{ marginTop: 8 }}
+            onPress={() => navigation.navigate("AddWorkout")}
+          />
+        </View>
         <ScrollView>
           <Text
             style={{ fontFamily: "DMSans_400Regular", color: "#d1d5db" }}
@@ -37,12 +52,9 @@ const ExercisesScreen = () => {
           </Text>
           {recent.length > 0 && (
             <View>
-              {recent.map((e) => (
-                <View key={e} className="flex-row space-x-2">
-                  <Text style={styles.textDMMedium}>{e}</Text>
-                  <Text style={styles.textDMMedium}>({e})</Text>
-                </View>
-              ))}
+              {/* {recent.map((e) => (
+                <Exercise data={e} />
+              ))} */}
             </View>
           )}
 
@@ -55,10 +67,7 @@ const ExercisesScreen = () => {
           {exercises.length > 0 && (
             <View>
               {exercises.map((e) => (
-                <View key={e.id} className="flex-row space-x-2">
-                  <Text style={styles.textDMMedium}>{e.name}</Text>
-                  <Text style={styles.textDMMedium}>({e.type})</Text>
-                </View>
+                <Exercise data={e} key={e.id} />
               ))}
             </View>
           )}
@@ -67,18 +76,5 @@ const ExercisesScreen = () => {
     </SafeArea>
   );
 };
-
-const styles = StyleSheet.create({
-  textDMMedium: {
-    fontFamily: "DMSans_500Medium",
-    color: "white",
-    fontSize: 16,
-  },
-  textAntonRegular: {
-    fontFamily: "Anton_400Regular",
-    fontSize: 32,
-    color: "white",
-  },
-});
 
 export default ExercisesScreen;

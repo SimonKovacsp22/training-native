@@ -1,8 +1,7 @@
 import { View, Text, Button, Image } from "react-native";
 import { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch } from "react-redux";
-import { logUserOut, setUser } from "../../../reducers/authSlice";
+import { setUser } from "../../../reducers/authSlice";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import { saveUserInDb } from "../../services/database.service";

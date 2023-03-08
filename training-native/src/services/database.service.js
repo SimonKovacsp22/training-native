@@ -32,7 +32,7 @@ export function saveNewTraining(userId, name, series, date) {
     name,
     series,
     date,
-  });
+  }).then((val) => console.log(val));
 }
 
 export function saveNewExercise(name, type) {

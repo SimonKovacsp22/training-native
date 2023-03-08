@@ -12,7 +12,7 @@ const TAB_ICONS = {
   Account: "user",
   Schedule: "back-in-time",
   Add: "plus",
-  Settings: "cog",
+  Exercises: "cog",
   Performance: "battery",
 };
 
@@ -52,7 +52,7 @@ const AppNavigation = () => {
       <Tab.Screen name="Account" component={HomeScreen} />
       <Tab.Screen name="Schedule" component={ScheduleScreen} />
       <Tab.Screen name="Add" component={WorkoutNavigator} />
-      <Tab.Screen name="Settings" component={Exercises} />
+      <Tab.Screen name="Exercises" component={Exercises} />
       <Tab.Screen name="Performance" component={PerformanceScreen} />
     </Tab.Navigator>
   );

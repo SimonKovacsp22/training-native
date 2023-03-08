@@ -1,24 +1,21 @@
 import { View, Text } from "react-native";
 import React from "react";
-import {
-  createStackNavigator,
-  TransitionPresets,
-} from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AddWorkoutScreen from "../../features/screens/add/MyWorkoutsScreen";
-import ExercizesScreen from "../../features/screens/add/ExercizesScreen";
+import NewWorkoutScreen from "../../features/screens/add/NewWorkoutScreen";
 
-const WorkouStack = createStackNavigator();
+const WorkouStack = createNativeStackNavigator();
 
 const WorkoutNavigator = () => {
   return (
     <WorkouStack.Navigator
       screenOptions={{
         headerShown: false,
-        ...TransitionPresets.ModalPresentationIOS,
+        presentation: "containedModal",
       }}
     >
       <WorkouStack.Screen name="MyWorkouts" component={AddWorkoutScreen} />
-      <WorkouStack.Screen name="AddWorkout" component={ExercizesScreen} />
+      <WorkouStack.Screen name="AddWorkout" component={NewWorkoutScreen} />
     </WorkouStack.Navigator>
   );
 };

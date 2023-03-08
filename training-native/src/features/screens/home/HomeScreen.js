@@ -55,7 +55,10 @@ const HomeScreen = () => {
             }
           ></Button>
           <Button title="Log Out" onPress={logOut}></Button>
-          <Button title="Update Serie" onPress={updateSerie}></Button>
+          <Button
+            title="Add Exercise"
+            onPress={() => saveNewExercise("Squat", "weight")}
+          ></Button>
         </View>
       )}
     </SafeArea>

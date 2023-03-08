@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import SafeArea from "../../../components/SafeArea";
 import React from "react";
-import Workouts from "../../../components/Workouts";
+import Workouts from "../../../components/workouts/Workouts.js";
 
 const AddWorkout = ({ navigation }) => {
   return (

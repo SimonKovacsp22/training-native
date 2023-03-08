@@ -11,7 +11,6 @@ import {
   DMSans_500Medium,
 } from "@expo-google-fonts/dm-sans";
 import Navigation from "./src/infrastructure/navigation";
-import "react-native-gesture-handler";
 import { Text } from "react-native";
 
 export default function App() {
