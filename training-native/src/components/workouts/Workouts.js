@@ -1,10 +1,11 @@
 import { View, Text, ScrollView } from "react-native";
 import React from "react";
-import InstanceWorkout from "./InstanceWorkout";
+import WorkoutPreview from "./WorkoutPreview";
 
-const dummyWOrkouts = [1, 2, 3, 4];
-
-const Workouts = () => {
+const Workouts = ({ data }) => {
+  if (data.length == 0) {
+    return <Text>You dont have any workouts</Text>;
+  }
   return (
     <>
       <View>
@@ -16,8 +17,8 @@ const Workouts = () => {
         </Text>
       </View>
       <ScrollView>
-        {dummyWOrkouts.map((work) => (
-          <InstanceWorkout key={work} />
+        {data?.map((workout) => (
+          <WorkoutPreview key={workout.id} data={workout} />
         ))}
       </ScrollView>
     </>

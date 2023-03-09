@@ -1,5 +1,14 @@
 import { initializeApp } from "firebase/app";
-import { getDatabase, ref, set, onValue, push } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  push,
+  orderByChild,
+  query,
+  equalTo,
+} from "firebase/database";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDu7u6BhKzEl2simJoUhMUtvMmHIKidBdM",
@@ -25,14 +34,15 @@ export function saveUserInDb(userId, name, email, imageUrl) {
 }
 
 export function saveNewTraining(userId, name, series, date) {
-  const trainingRef = ref(database, "trainings");
-  const newPostRef = push(trainingRef);
-  set(newPostRef, {
+  const trainingsRef = ref(database, "trainings");
+  const newTrainingRef = push(trainingsRef);
+  set(newTrainingRef, {
     userId,
     name,
     series,
     date,
-  }).then((val) => console.log(val));
+  });
+  return newTrainingRef.key;
 }
 
 export function saveNewExercise(name, type) {
@@ -52,3 +62,42 @@ export function saveNewSerie(exerciseId, sets) {
     sets,
   });
 }
+
+export function getMyWorkouts(userId) {
+  const trainingsRef = ref(database, "trainings/");
+  const trainings = query(
+    trainingsRef,
+    orderByChild("userId"),
+    equalTo(userId)
+  );
+
+  return trainings;
+}
+
+export function getSeriesForWorkout(seriesArray) {
+  const listOfSeries = [];
+  seriesArray.forEach((serieId) => {
+    const seriesRef = ref(database, "series/" + serieId);
+    onValue(seriesRef, (snapshot) => {
+      const data = snapshot.val();
+      if (!!data.exerciseId) {
+        const exerciseRef = ref(database, "exercises/" + data.exerciseId);
+        onValue(exerciseRef, (exerciseSnapShot) => {
+          const exercise = exerciseSnapShot.val();
+          data.exerciseName = exercise.name;
+        });
+      }
+
+      listOfSeries.push({ id: serieId, ...data });
+    });
+  });
+  return listOfSeries;
+}
+
+export const dataToArray = (data) => {
+  const dataArray = Object.entries(data).map(([key, value]) => ({
+    id: key,
+    ...value,
+  }));
+  return dataArray;
+};

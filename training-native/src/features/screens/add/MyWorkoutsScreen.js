@@ -1,9 +1,35 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import SafeArea from "../../../components/SafeArea";
-import React from "react";
-import Workouts from "../../../components/workouts/Workouts.js";
+import React, { useEffect, useState } from "react";
+import Workouts from "../../../components/workouts/Workouts";
+import { dataToArray, getMyWorkouts } from "../../../services/database.service";
+import { onValue } from "firebase/database";
+import { authSelector } from "../../../../reducers/authSlice";
+import { useSelector } from "react-redux";
 
 const AddWorkout = ({ navigation }) => {
+  const { user } = useSelector(authSelector);
+  const [workouts, setWorkouts] = useState([]);
+
+  const queryWorkouts = () => {
+    const trainings = getMyWorkouts(user.id);
+    const val = onValue(
+      trainings,
+      (snapshot) => {
+        const data = snapshot.val();
+        const dataArray = dataToArray(data);
+        setWorkouts(dataArray);
+      },
+      {
+        onlyOnce: true,
+      }
+    );
+  };
+
+  useEffect(() => {
+    queryWorkouts();
+  }, []);
+
   return (
     <SafeArea>
       <View className="flex-1 bg-training-bg-blue px-6 py-4">
@@ -16,7 +42,7 @@ const AddWorkout = ({ navigation }) => {
         >
           Training
         </Text>
-        <Workouts />
+        <Workouts data={workouts} />
         <View className="pt-3">
           <TouchableOpacity onPress={() => navigation.navigate("AddWorkout")}>
             <View className="bg-training-button-blue py-3 rounded">

@@ -1,7 +1,7 @@
 import { View, Text, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
 import { ref, onValue } from "firebase/database";
-import { database } from "../../../services/database.service";
+import { database, dataToArray } from "../../../services/database.service";
 import SafeArea from "../../../components/SafeArea";
 import Exercise from "../../../components/exercises/InstanceExercise";
 import { textStyles } from "../../../theme/text.styles";
@@ -19,10 +19,7 @@ const ExercisesScreen = ({ navigation }) => {
       const exercisesRef = ref(database, "exercises");
       onValue(exercisesRef, (snapshot) => {
         const data = snapshot.val();
-        const dataArray = Object.entries(data).map(([key, value]) => ({
-          id: key,
-          ...value,
-        }));
+        const dataArray = dataToArray(data);
         setExercises(dataArray);
       });
     }
